@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>View</title>
+    <title>Employees</title>
 </head>
 <body>
     <h3>Сотрудники:</h3>
@@ -27,6 +27,7 @@
                     <td>@employee.FirstName</td>
                     <td>@employee.Patronymic</td>
                     <td>@employee.Age</td>
+                    <td><a href="~/Home/EmployeeDetail/@employee.Id">Детали</a></td>
                 </tr>
             }
         </tbody>

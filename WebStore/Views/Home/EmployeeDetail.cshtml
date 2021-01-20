@@ -1,0 +1,51 @@
+﻿@model WebStore.Models.Employee
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Employee Detail</title>
+</head>
+<body>
+    <h4>Детальная информация по сотруднику:</h4>
+    <hr />
+    <table>
+        <tbody>
+            <tr>
+                <td>Id сотрудника:</td>
+                <td>@Model.Id</td>
+            </tr>
+            <tr>
+                <td>Фамилия:</td>
+                <td>@Model.LastName</td>
+            </tr>
+            <tr>
+                <td>Имя:</td>
+                <td>@Model.FirstName</td>
+            </tr>
+            <tr>
+                <td>Отчество:</td>
+                <td>@Model.Patronymic</td>
+            </tr>
+            <tr>
+                <td>Дата рождения:</td>
+                <td>@Model.BirthDate.ToShortDateString()</td>
+            </tr>
+            <tr>
+                <td>Возраст:</td>
+                <td>@Model.Age</td>
+            </tr>
+            <tr>
+                <td>Дата найма:</td>
+                <td>@Model.HireDate.ToShortDateString()</td>
+            </tr>
+            <tr>
+                <td>Город проживания:</td>
+                <td>@Model.City</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+    <a href="~/Home/Employees">Back to List</a>
+</body>
+</html>
