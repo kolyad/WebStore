@@ -34,7 +34,7 @@ namespace WebStore.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create() => View("Edit", new Employee() {BirthDate = new DateTime(1980, 1, 1), HireDate = new DateTime(2000, 1, 1) });
+        public IActionResult Create() => View("Edit", new Employee());
 
 
         [HttpGet]
