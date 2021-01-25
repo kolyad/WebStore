@@ -2,53 +2,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebStore.Data;
 using WebStore.Models;
 
 namespace WebStore.Controllers
 {
     public class EmployeesController : Controller
     {
+        private readonly IList<Employee> _employees;
 
-        private static readonly List<Employee> _employees = new()
+        public EmployeesController()
         {
-            new Employee
-            {
-                Id = 1,
-                LastName = "Иванов",
-                FirstName = "Александр",
-                Patronymic = "Сергеевич",
-                BirthDate = new DateTime(1979, 2, 7),
-                HireDate = new DateTime(2010, 5, 15),
-                City = "Москва"
-            },
-            new Employee
-            {
-                Id = 2,
-                LastName = "Васечкин",
-                FirstName = "Иван",
-                Patronymic = "Васильевич",
-                BirthDate = new DateTime(1999, 10, 11),
-                HireDate = new DateTime(2015, 1, 20),
-                City = "Краснодар"
-            },
-            new Employee
-            {
-                Id = 3,
-                LastName = "Прохоров",
-                FirstName = "Михаил",
-                Patronymic = "Фёдорович",
-                BirthDate = new DateTime(2001, 1, 21),
-                HireDate = new DateTime(2020, 6, 10),
-                City = "Пермь"
-            }
-        };
+            _employees = TestData.Employees;
+        }
 
         public IActionResult Index()
         {
             return View(_employees);
         }
 
-        public IActionResult EmployeeDetail(int Id)
+        public IActionResult Details(int Id)
         {
             var model = _employees.FirstOrDefault(x => x.Id == Id);
 
@@ -58,6 +31,84 @@ namespace WebStore.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Create() => View("Edit", new Employee() {BirthDate = new DateTime(1980, 1, 1), HireDate = new DateTime(2000, 1, 1) });
+
+
+        [HttpGet]
+        public IActionResult Edit(int Id)
+        {
+            var model = _employees.FirstOrDefault(x => x.Id == Id);
+
+            if (model is null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Employee model)
+        {
+            Employee employee;
+
+            if (model.Id == 0)
+            {
+                employee = new Employee();
+                int maxId = 0;
+                if (_employees.Any())
+                {
+                    maxId = _employees.Max(x => x.Id);
+                }
+                employee.Id = ++maxId;
+                _employees.Add(employee);
+            }
+            else
+            {
+                employee = _employees.FirstOrDefault(x => x.Id == model.Id);
+
+                if (employee is null)
+                {
+                    return NotFound();
+                }
+            }
+
+            employee.FirstName = model.FirstName;
+            employee.LastName = model.LastName;
+            employee.Patronymic = model.Patronymic;
+            employee.BirthDate = model.BirthDate;
+            employee.City = model.City;
+            employee.HireDate = model.HireDate;
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int Id)
+        {
+            var model = _employees.FirstOrDefault(x => x.Id == Id);
+            if (model is null)
+            {
+                return NotFound();
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(Employee model)
+        {
+            var employee = _employees.FirstOrDefault(x => x.Id == model.Id);
+            if (employee is null)
+            {
+                return NotFound();
+            }
+
+            _employees.Remove(employee);
+
+            return RedirectToAction("Index");
         }
     }
 }
