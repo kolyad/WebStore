@@ -1,74 +1,80 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebStore.Data;
+using WebStore.Infrastructure.Interfaces;
 using WebStore.Models;
+using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
     public class EmployeesController : Controller
     {
-        private readonly IList<Employee> _employees;
+        private readonly IEmployeesData _employeesData;
 
-        public EmployeesController()
+        public EmployeesController(IEmployeesData employeesData)
         {
-            _employees = TestData.Employees;
+            _employeesData = employeesData;
         }
 
         public IActionResult Index()
         {
-            return View(_employees);
+            var employees = _employeesData.Get();
+
+            if (employees.Any())
+            {
+                var employeesViewModel = employees
+                    .Select(x => GetEmployeeViewModel(x))
+                    .ToList();
+
+                return View(employeesViewModel);
+            }
+            else
+            {
+                return View(new List<EmployeeViewModel>());
+            }
         }
 
         public IActionResult Details(int Id)
         {
-            var model = _employees.FirstOrDefault(x => x.Id == Id);
+            var model = _employeesData.Get(Id);
 
             if (model is null)
             {
                 return NotFound();
             }
 
-            return View(model);
+            return View(GetEmployeeViewModel(model));
         }
 
         [HttpGet]
-        public IActionResult Create() => View("Edit", new Employee());
+        public IActionResult Create() => View("Edit", new EmployeeViewModel());
 
 
         [HttpGet]
         public IActionResult Edit(int Id)
         {
-            var model = _employees.FirstOrDefault(x => x.Id == Id);
+            var model = _employeesData.Get(Id);
 
             if (model is null)
             {
                 return NotFound();
             }
 
-            return View(model);
+            return View(GetEmployeeViewModel(model));
         }
 
         [HttpPost]
-        public IActionResult Edit(Employee model)
+        public IActionResult Edit(EmployeeViewModel model)
         {
             Employee employee;
 
             if (model.Id == 0)
             {
                 employee = new Employee();
-                int maxId = 0;
-                if (_employees.Any())
-                {
-                    maxId = _employees.Max(x => x.Id);
-                }
-                employee.Id = ++maxId;
-                _employees.Add(employee);
             }
             else
             {
-                employee = _employees.FirstOrDefault(x => x.Id == model.Id);
+                employee = _employeesData.Get(model.Id);
 
                 if (employee is null)
                 {
@@ -83,32 +89,65 @@ namespace WebStore.Controllers
             employee.City = model.City;
             employee.HireDate = model.HireDate;
 
+            if (model.Id == 0)
+            {
+                _employeesData.Add(employee);
+            }
+            else
+            {
+                _employeesData.Update(employee);
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int Id)
         {
-            var model = _employees.FirstOrDefault(x => x.Id == Id);
-            if (model is null)
-            {
-                return NotFound();
-            }
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Delete(Employee model)
-        {
-            var employee = _employees.FirstOrDefault(x => x.Id == model.Id);
+            var employee = _employeesData.Get(Id);
             if (employee is null)
             {
                 return NotFound();
             }
 
-            _employees.Remove(employee);
+            return View(GetEmployeeViewModel(employee));
+        }
 
-            return RedirectToAction("Index");
+        [HttpPost]
+        public IActionResult Delete(EmployeeViewModel model)
+        {
+            var employee = _employeesData.Get(model.Id);
+            if (employee is null)
+            {
+                return NotFound();
+            }
+
+            if (_employeesData.Delete(employee.Id))
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        private EmployeeViewModel GetEmployeeViewModel(Employee employee)
+        {
+            var employeeViewModel = new EmployeeViewModel();
+            CopyEmployeeToViewModel(employee, employeeViewModel);            
+            return employeeViewModel;
+        }
+
+        private void CopyEmployeeToViewModel(Employee employee, EmployeeViewModel model)
+        {
+            model.Id = employee.Id;
+            model.FirstName = employee.FirstName;
+            model.LastName = employee.LastName;
+            model.Patronymic = employee.Patronymic;
+            model.BirthDate = employee.BirthDate;
+            model.City = employee.City;
+            model.HireDate = employee.HireDate;
         }
     }
 }
