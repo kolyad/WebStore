@@ -26,7 +26,7 @@ namespace WebStore.Models
         /// <summary>
         /// Дата рождения сотрудника
         /// </summary>
-        public DateTime BirthDate { get; set; }
+        public DateTime BirthDate { get; set; } = new DateTime(1980, 1, 1);
         /// <summary>
         /// Возраст сотрудника
         /// </summary>
@@ -55,10 +55,10 @@ namespace WebStore.Models
         /// <summary>
         /// Дата найма сотрудника
         /// </summary>
-        public DateTime HireDate { get; set; }
+        public DateTime HireDate { get; set; } = new DateTime(2000, 1, 1);
         /// <summary>
         /// Город проживания сотрудинка
         /// </summary>
-        public string City { get; set; }
+        public string City { get; set; } = "Москва";
     }
 }
