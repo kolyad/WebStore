@@ -1,0 +1,64 @@
+﻿using System;
+
+namespace WebStore.ViewModels
+{
+    /// <summary>
+    /// Сотрудник
+    /// </summary>
+    public class EmployeeViewModel
+    {
+        /// <summary>
+        /// Id сотрудника
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
+        /// Фамилия сотрудника
+        /// </summary>
+        public string FirstName { get; set; }
+        /// <summary>
+        /// Имя сотрудника
+        /// </summary>
+        public string LastName { get; set; }
+        /// <summary>
+        /// Отчество сотрудника
+        /// </summary>
+        public string Patronymic { get; set; }
+        /// <summary>
+        /// Дата рождения сотрудника
+        /// </summary>
+        public DateTime BirthDate { get; set; } = new DateTime(1980, 1, 1);
+        /// <summary>
+        /// Возраст сотрудника
+        /// </summary>
+        public int Age
+        {
+            get
+            {
+                var now = DateTime.Now;
+                
+                var age = now.Year - BirthDate.Year;
+
+                if (age <= 0)
+                {
+                    return 0;
+                }
+
+                if ((now.Month < BirthDate.Month) ||
+                    (now.Month == BirthDate.Month && now.Day < BirthDate.Day))
+                {
+                    age--;
+                }
+
+                return age;
+            }
+        }
+        /// <summary>
+        /// Дата найма сотрудника
+        /// </summary>
+        public DateTime HireDate { get; set; } = new DateTime(2000, 1, 1);
+        /// <summary>
+        /// Город проживания сотрудинка
+        /// </summary>
+        public string City { get; set; } = "Москва";
+    }
+}
